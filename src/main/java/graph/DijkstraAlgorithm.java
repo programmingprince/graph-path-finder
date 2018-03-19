@@ -10,6 +10,7 @@ public class DijkstraAlgorithm {
     private Set<Vertex> unVisitedNodes;
     private Map<Vertex, Vertex> predecessors;
     private Map<Vertex, Integer> distance;
+    int budget = 7;
 
     public DijkstraAlgorithm(Graph graph) {
         // create a copy of the array so that we can operate on this array
@@ -72,7 +73,12 @@ public class DijkstraAlgorithm {
             if (minimum == null) {
                 minimum = vertex;
             } else {
-                if (getShortestDistance(vertex) < getShortestDistance(minimum)) {
+                if (minimum.getInterests().contains("Lake") && vertex.getInterests().contains("Lake") &&
+                        getShortestDistance(vertex) < getShortestDistance(minimum)) {
+                    minimum = vertex;
+                } else if (vertex.getInterests().contains("Lake")) {
+                    minimum = vertex;
+                } else if (getShortestDistance(vertex) < getShortestDistance(minimum)) {
                     minimum = vertex;
                 }
             }
