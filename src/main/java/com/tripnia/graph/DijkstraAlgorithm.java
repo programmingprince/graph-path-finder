@@ -1,4 +1,4 @@
-package graph;
+package com.tripnia.graph;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,20 +23,34 @@ public class DijkstraAlgorithm {
         distance = new HashMap<Vertex, Integer>();
         predecessors = new HashMap<Vertex, Vertex>();
         distance.put(source, 0);
+        System.out.println("vertices: " + nodes);
+        int i = 0;
         unVisitedNodes = this.nodes.stream().filter(node -> !node.getVisited()).collect(Collectors.toSet());
         while (unVisitedNodes.size() > 0) {
-            Vertex vertexWithMinimumDistance = getMinimum(unVisitedNodes);
+            Vertex vertexWithMinimumDistance;
+            if (i == 0) {
+                vertexWithMinimumDistance = source;
+            } else {
+                vertexWithMinimumDistance = getMinimum(unVisitedNodes);
+            }
             vertexWithMinimumDistance.setVisited(true);
             findMinimalDistances(vertexWithMinimumDistance);
             unVisitedNodes = this.nodes.stream().filter(node -> !node.getVisited()).collect(Collectors.toSet());
+            i++;
         }
     }
 
     private void findMinimalDistances(Vertex node) {
         List<Vertex> adjacentNodes = getNeighbors(node);
+        System.out.println("neighbours of " + node + ": " + adjacentNodes);
         for (Vertex target : adjacentNodes) {
-            if (getShortestDistance(target) > getShortestDistance(node)
-                    + getDistance(node, target)) {
+            if ((getShortestDistance(target) > getShortestDistance(node)
+                    + getDistance(node, target)) || (node.getInterests().contains("Lake")
+                    && target.getInterests().contains("Lake") && (getShortestDistance(node)
+                    + getDistance(node, target)) < budget)) {
+                System.out.println("Previous distance: " + target);
+                System.out.println(getShortestDistance(node)
+                        + getDistance(node, target));
                 distance.put(target, getShortestDistance(node)
                         + getDistance(node, target));
                 predecessors.put(target, node);
@@ -68,21 +82,51 @@ public class DijkstraAlgorithm {
     }
 
     private Vertex getMinimum(Set<Vertex> vertexes) {
+        System.out.println("vertices: " + vertexes);
         Vertex minimum = null;
         for (Vertex vertex : vertexes) {
+            System.out.println("working for vertex: " + vertex);
+            System.out.println("old minimum: " + minimum);
             if (minimum == null) {
                 minimum = vertex;
             } else {
                 if (minimum.getInterests().contains("Lake") && vertex.getInterests().contains("Lake") &&
-                        getShortestDistance(vertex) < getShortestDistance(minimum)) {
+                        getShortestDistance(vertex) < budget) {
                     minimum = vertex;
-                } else if (vertex.getInterests().contains("Lake")) {
+                    System.out.println("inside if");
+                } else if (
+                        getShortestDistance(minimum) > budget &&
+                                getShortestDistance(vertex) < budget) {
                     minimum = vertex;
+                    System.out.println("inside 1 else if");
                 } else if (getShortestDistance(vertex) < getShortestDistance(minimum)) {
                     minimum = vertex;
+                    System.out.println("inside 2 else if");
                 }
             }
+            System.out.println("new minimum: " + minimum);
         }
+        System.out.println("returning minimum: " + minimum);
+//
+//        for (Vertex vertex : vertexes) {
+//            System.out.println("vertex: " + vertex);
+//            System.out.println("old minimum: " + minimum);
+//            if (minimum == null) {
+//                minimum = vertex;
+//                System.out.println("inside if");
+//
+//            } else {
+//                if (getShortestDistance(vertex) < getShortestDistance(minimum)) {
+//                    minimum = vertex;
+//                    System.out.println("inside else ");
+//                }
+//            }
+//            System.out.println("new minimum: " + minimum);
+//
+//        }
+//
+//        System.out.println("returning minimum: " + minimum);
+
         return minimum;
     }
 
@@ -105,6 +149,7 @@ public class DijkstraAlgorithm {
      */
     public LinkedList<Vertex> getPath(Vertex target) {
         LinkedList<Vertex> path = new LinkedList<Vertex>();
+        System.out.println("predecessors: " + predecessors);
         Vertex step = target;
         // check if a path exists
         if (predecessors.get(step) == null) {

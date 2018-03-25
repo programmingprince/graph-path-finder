@@ -1,4 +1,4 @@
-package graph;
+package com.tripnia.graph;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package graph;
+package com.tripnia.graph;
 
 public class Edge {
     private final String id;
