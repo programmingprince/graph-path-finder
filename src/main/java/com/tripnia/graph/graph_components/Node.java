@@ -1,18 +1,20 @@
-package com.tripnia.graph;
+package com.tripnia.graph.graph_components;
 
 import java.util.List;
 
-public class Vertex {
+public class Node {
     final private String id;
     final private String name;
     private boolean visited;
-    private List<String> interests;
+    private List<String> tags;
+    private int numberOfDays;
 
-    public Vertex(String id, String name, List<String> interests) {
+    public Node(String id, String name, List<String> tags, int numberOfDays) {
         this.id = id;
         this.name = name;
         this.visited = false;
-        this.interests = interests;
+        this.tags = tags;
+        this.numberOfDays = numberOfDays;
     }
 
     public String getId() {
@@ -31,8 +33,16 @@ public class Vertex {
         return this.visited;
     }
 
-    public List<String> getInterests() {
-        return this.interests;
+    public List<String> getTags() {
+        return this.tags;
+    }
+
+    public int getNumberOfDays() {
+        return numberOfDays;
+    }
+
+    public void setNumberOfDays(int numberOfDays) {
+        this.numberOfDays = numberOfDays;
     }
 
     @Override
@@ -51,7 +61,7 @@ public class Vertex {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Vertex other = (Vertex) obj;
+        Node other = (Node) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
