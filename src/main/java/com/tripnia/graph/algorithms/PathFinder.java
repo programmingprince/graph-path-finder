@@ -2,11 +2,12 @@ package com.tripnia.graph.algorithms;
 
 import com.tripnia.graph.graph_components.Graph;
 import com.tripnia.graph.graph_components.Node;
+import com.tripnia.graph.graph_components.Path;
 import com.tripnia.graph.utils.GraphDBService;
-import sun.security.krb5.internal.crypto.Des;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PathFinder {
@@ -15,21 +16,32 @@ public class PathFinder {
     private SourceToDestinationPathFinder sourceToDestinationPathFinder;
     private DestinationToSourcePathFinder destinationToSourcePathFinder;
 
-    public PathFinder() {
+    public PathFinder(Graph graph) {
         graphDBService = new GraphDBService();
-        this.graph = graphDBService.getGraph();
+//        this.graph = graphDBService.getGraph();
+        this.graph = graph;
     }
 
-    public List<Node> getTrip(String startNodeName, float budget, float duration, List<String> tags) {
+    public Map<String, Path> getTrip(String startNodeName, String targetNodeName, float budget, float duration, List<String> tags) {
         sourceToDestinationPathFinder = new SourceToDestinationPathFinder(this.graph);
         destinationToSourcePathFinder = new DestinationToSourcePathFinder(this.graph);
 
         Node startNode = graph.getNodes().stream().filter(node ->
                 node.getName().equals(startNodeName)).collect(Collectors.toList()).get(0);
 
+        Node targetNode = graph.getNodes().stream().filter(node ->
+                node.getName().equals(targetNodeName)).collect(Collectors.toList()).get(0);
 
+        sourceToDestinationPathFinder.execute(startNode, budget, duration, tags);
+        Path sourceToDestinationPath = sourceToDestinationPathFinder.getPath(targetNode);
 
-        return new ArrayList<>();
+        destinationToSourcePathFinder.execute(targetNode);
+        Path destinationToSourcePath = destinationToSourcePathFinder.getPath(startNode);
+
+        Map<String, Path> completePath = new HashMap<>();
+        completePath.put("sourceToDestination", sourceToDestinationPath);
+        completePath.put("destinationToSource", destinationToSourcePath);
+
+        return completePath;
     }
-
 }

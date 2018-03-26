@@ -8,10 +8,10 @@ import com.tripnia.graph.graph_components.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SourceToDestinationPathFinder {
+public class SourceToDestinationPathFinder extends PathUtilities {
 
-    private final List<Node> nodes;
-    private final List<Edge> edges;
+    private List<Node> nodes;
+    private List<Edge> edges;
     private Set<Node> unVisitedNodes;
     private Map<Node, Node> predecessors;
     private Map<Node, Float> distance;
@@ -115,31 +115,8 @@ public class SourceToDestinationPathFinder {
     }
 
     public Path getPath(Node target) {
-        Path path = new Path();
-        LinkedList<Node> nodesInPath = new LinkedList<>();
-        LinkedList<Edge> edgesInPath = new LinkedList<>();
-        Node step = target;
-        if (predecessors.get(step) == null) {
-            return null;
-        }
-        nodesInPath.add(step);
-        while (predecessors.get(step) != null) {
-            step = predecessors.get(step);
-            nodesInPath.add(step);
-        }
-        Collections.reverse(nodesInPath);
-        path.setNodes(nodesInPath);
-
-        for (int i = 0; i < nodesInPath.size() - 1; i++) {
-            for (Edge edge : this.edges) {
-                if (edge.getSource().getName().equals(nodesInPath.get(i).getName())
-                        && edge.getDestination().getName().equals(nodesInPath.get(i + 1).getName())) {
-                    edgesInPath.add(edge);
-                }
-            }
-        }
-
-        path.setEdges(edgesInPath);
-        return path;
+        super.setPredecessors(this.predecessors);
+        super.setEdges(this.edges);
+        return super.getPath(target);
     }
 }
